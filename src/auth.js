@@ -1,17 +1,10 @@
 import "dotenv/config";
-import fs from "fs";
-import https from "https";
 import fetch from "node-fetch";
+import { HttpError } from "./HttpError.js";
 
 const SISCOMEX_URL = process.env.SISCOMEX_URL;
 
-export async function getAuth() {
-  const agent = new https.Agent({
-    pfx: fs.readFileSync("./src/samson.pfx"),
-    passphrase: "samson2024",
-    rejectUnauthorized: false, // Set to true in production
-  });
-
+export async function getAuth(agent) {
   const response = await fetch(`${SISCOMEX_URL}/portal/api/autenticar`, {
     method: "POST",
     headers: {
@@ -19,9 +12,8 @@ export async function getAuth() {
     },
     agent,
   });
-
   if (!response.ok) {
-    throw new Error(`Erro ao obter token: ${await response.text()}`);
+    throw new HttpError(response.status, `Erro ao obter token: ${await response.text()}`);
   }
 
   return {

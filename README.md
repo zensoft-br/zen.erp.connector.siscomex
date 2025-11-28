@@ -1,3 +1,4 @@
+# zen.erp.connector.siscomex
 
 ## Links úteis
 
@@ -12,12 +13,16 @@
 - Comex Responde
   - https://solicitacao.servicos.gov.br/processos
 
+## Ambientes
+
+- Homologação: https://val.portalunico.siscomex.gov.br
+- Produção: https://portalunico.siscomex.gov.br
 
 ## Consultar DUIMP's
 
 - Acesse https://portalunico.siscomex.gov.br/duimp/#/consultar-duimp
 - Selecione a opção **Outros parâmetros**
-  - CPF do responsável: `062.607.857-12`
+  - CPF do responsável: `(informar)`
   - Situação: `Pré-registro`
   - Data inicial: `(informar)`
   - Clique em **Consultar**
@@ -25,9 +30,20 @@
 
 ## Exemplos de DUIMP
 
-- 24BR0000006020-0
+- 24BR0000019582-3
   - CNPJ: 26.766.610/0002-75
   - CPF: 062.607.857-12
-- 24BR0000019582-3
-  - CNPJ: 00.770.937/0001-46
-  - CPF: 018.456.239-24
+
+## Instalação
+
+- Instale o node https://nodejs.org
+  - https://nodejs.org/dist/v22.14.0/node-v22.14.0-x64.msi
+- Extraia o arquivo siscomex.zip em uma pasta
+- Copie o certificado digital nesta pasta
+- Abra um prompt de comando nesta pasta
+- Execute o comando abaixo:
+  - `node .\index.js --cert <certificado> --password <senha> --duimp <duimp>`
+  - certificado: nome do arquivo do certificado
+  - senha: senha do certificado
+  - duimp: número da duimp
+- O arquivo da DUIMP será gravado na mesma pasta

@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "zen.erp.connector.siscomex",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -25,10 +25,12 @@
   "contributors": [],
   "scripts": {
     "dev": "",
-    "test": ""
+    "test": "",
+    "build_exe": "ncc build src/download.js -o dist"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "yargs": "^17.7.2"
   }
 }
