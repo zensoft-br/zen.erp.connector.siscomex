@@ -6,6 +6,7 @@ import { fetchProduto } from "./produto.js";
 const SISCOMEX_URL = process.env.SISCOMEX_URL || "https://portalunico.siscomex.gov.br";
 
 export async function fetchDuimp(auth, numero) {
+  // fetch latest version number
   let versao;
   {
     const response = await fetch(`${SISCOMEX_URL}/duimp-api/api/ext/duimp/${numero}/versoes`, {
@@ -20,6 +21,7 @@ export async function fetchDuimp(auth, numero) {
     versao = json.versao;
   }
 
+  // fetch duimp data
   let duimp;
   {
     const response = await fetch(`${SISCOMEX_URL}/duimp-api/api/ext/duimp/${numero}/${versao}`, {
@@ -31,6 +33,7 @@ export async function fetchDuimp(auth, numero) {
     duimp = await response.json();
   }
 
+  // load items in batches of 100
   let itens = [];
   const BATCH_SIZE = 100;
   for (let i = 1; i <= duimp.itens.length; i += BATCH_SIZE) {
@@ -44,11 +47,12 @@ export async function fetchDuimp(auth, numero) {
     if (!response.ok) {
       throw await HttpError.fromResponse(response);
     }
-    
+
     const batch = await response.json();
     itens.push(...batch);
   }
 
+  // fetch product details for each item
   for (const item of itens) {
     item.produto = {
       ...item.produto,
@@ -56,8 +60,14 @@ export async function fetchDuimp(auth, numero) {
     }
   }
 
+  // merge item data back into duimp
+  for (const item of duimp.itens) {
+    Object.assign(item, itens.find(e => e.identificacao.numeroItem === item.indice));
+  }
+
   return {
     duimp,
+    // TODO remove this in future versions
     itens,
   }
 }
