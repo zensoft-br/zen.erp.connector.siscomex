@@ -24,16 +24,26 @@
   },
   "contributors": [],
   "scripts": {
-    "dev": "",
-    "test": "",
-    "build_exe": "ncc build src/download.js -o dist"
+    "build": "node scripts/build.js",
+    "deploy": "npm run build && aws lambda update-function-code --function-name zen_microservice_siscomex --zip-file fileb://bundle.zip --publish",
+    "build_exe": "ncc build src/download.js -o dist",
+    "dev": "node --import dotenv/config scripts/express.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "multer": "^2.0.2",
     "node-fetch": "^3.3.2",
+    "serverless-http": "^4.0.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.4"
+    "@vercel/ncc": "^0.38.4",
+    "archiver": "^7.0.1",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.27.2",
+    "supertest": "^7.2.2",
+    "vitest": "^4.0.17"
   }
 }

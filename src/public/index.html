@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zen ERP - Ferramentas Siscomex</title>
+  <style>
+    body,
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Download de DUIMP</h2>
+  <form id="downloadForm">
+    <div class="field-slot">
+      <label for="certificate">Certificado (.pfx / .p12)</label>
+      <input type="file" id="certificate" name="certificate" accept=".pfx,.p12" required>
+    </div>
+
+    <div class="field-slot">
+      <label for="password">Senha do certificado</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+
+    <div class="field-slot">
+      <label for="duimp">Número da DUIMP</label>
+      <input type="text" id="duimp" name="duimp" required>
+    </div>
+
+    <div>
+      <button type="submit" id="submitBtn">Download</button>
+    </div>
+  </form>
+
+  <div id="status"></div>
+
+  <h2>Observações</h2>
+  <ul>
+    <li>Este serviço é uma cortesia do <a href="https://zenerp.com.br" target="_blank">Zen ERP</a></li>
+    <li>Nós não armazenamos dados do certificado ou da DUIMP, a requisição é enviada diretamente para a API do
+      Siscomex.</li>
+    <li>A API do Siscomex permite apenas uma autenticação por minuto, e como não armazenamos dados, é importante
+      aguardar esse intervalo entre as requisições.</li>
+    <li>Documentação da API do Siscomex:
+      <a
+        href="https://api-docs.portalunico.siscomex.gov.br/api/plat">https://api-docs.portalunico.siscomex.gov.br/api/plat</a>
+    </li>
+  </ul>
+
+  <script>
+    const form = document.getElementById('downloadForm');
+    const statusDiv = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // UI Reset
+      statusDiv.style.display = 'none';
+      statusDiv.className = '';
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Processing...';
+
+      const formData = new FormData(form);
+
+      let errorData;
+
+      try {
+        const response = await fetch('/duimp/download', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          errorData = await response.json();
+          console.error('Error fetching DUIMP:', errorData);
+          throw new Error(errorData.message || 'Server Error');
+        }
+
+        // 1. Get the JSON Blob
+        const blob = await response.blob();
+
+        // 2. Create a download link dynamically
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+
+        // Name the file based on the input or timestamp
+        const duimpNum = formData.get('duimp');
+        a.download = `DUIMP_${duimpNum}.json`;
+
+        // 3. Trigger download
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        window.URL.revokeObjectURL(url);
+        statusDiv.innerText = 'Download started successfully!';
+        statusDiv.className = 'success';
+        statusDiv.style.display = 'block';
+
+      } catch (error) {
+        statusDiv.innerText = `Error: ${errorData.message}\n${errorData.errors ? errorData.errors.map(e => `${e.code} - ${e.message}`).join('\n') : ''}`;
+        statusDiv.className = 'error';
+        statusDiv.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Download';
+      }
+    });
+  </script>
+</body>
+
+</html>

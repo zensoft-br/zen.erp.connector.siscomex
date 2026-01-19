@@ -37,7 +37,6 @@
 ## Instalação
 
 - Instale o node https://nodejs.org
-  - https://nodejs.org/dist/v22.14.0/node-v22.14.0-x64.msi
 - Extraia o arquivo siscomex.zip em uma pasta
 - Copie o certificado digital nesta pasta
 - Abra um prompt de comando nesta pasta

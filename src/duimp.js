@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import { HttpError } from "./HttpError.js";
 import { fetchProduto } from "./produto.js";
 
-const SISCOMEX_URL = process.env.SISCOMEX_URL;
+const SISCOMEX_URL = process.env.SISCOMEX_URL || "https://portalunico.siscomex.gov.br";
 
 export async function fetchDuimp(auth, numero) {
   let versao;
@@ -14,7 +14,7 @@ export async function fetchDuimp(auth, numero) {
       },
     });
     if (!response.ok) {
-      throw new HttpError(response.status, await response.text());
+      throw await HttpError.fromResponse(response);
     }
     const json = await response.json();
     versao = json.versao;
@@ -26,7 +26,7 @@ export async function fetchDuimp(auth, numero) {
       headers: auth,
     });
     if (!response.ok) {
-      throw new HttpError(response.status, await response.text());
+      throw await HttpError.fromResponse(response);
     }
     duimp = await response.json();
   }
@@ -42,7 +42,7 @@ export async function fetchDuimp(auth, numero) {
       headers: auth,
     });
     if (!response.ok) {
-      throw new HttpError(response.status, await response.text());
+      throw await HttpError.fromResponse(response);
     }
     
     const batch = await response.json();

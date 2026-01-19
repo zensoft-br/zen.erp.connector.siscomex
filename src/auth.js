@@ -2,7 +2,7 @@ import "dotenv/config";
 import fetch from "node-fetch";
 import { HttpError } from "./HttpError.js";
 
-const SISCOMEX_URL = process.env.SISCOMEX_URL;
+const SISCOMEX_URL = process.env.SISCOMEX_URL || "https://portalunico.siscomex.gov.br";
 
 export async function getAuth(agent) {
   const response = await fetch(`${SISCOMEX_URL}/portal/api/autenticar`, {
@@ -13,7 +13,7 @@ export async function getAuth(agent) {
     agent,
   });
   if (!response.ok) {
-    throw new HttpError(response.status, `Erro ao obter token: ${await response.text()}`);
+    throw await HttpError.fromResponse(response);
   }
 
   return {
