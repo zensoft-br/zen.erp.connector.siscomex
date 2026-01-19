@@ -31,16 +31,22 @@ export async function fetchDuimp(auth, numero) {
     duimp = await response.json();
   }
 
-  let itens;
-  {
-    const response = await fetch(`${SISCOMEX_URL}/duimp-api/api/ext/duimp/${numero}/${versao}/itens`, {
+  let itens = [];
+  const BATCH_SIZE = 100;
+  for (let i = 1; i <= duimp.itens.length; i += BATCH_SIZE) {
+    const url = new URL(`${SISCOMEX_URL}/duimp-api/api/ext/duimp/${numero}/${versao}/itens`);
+    url.searchParams.append('inicial', i);
+    url.searchParams.append('tamanho', BATCH_SIZE);
+
+    const response = await fetch(url.toString(), {
       headers: auth,
     });
     if (!response.ok) {
       throw new HttpError(response.status, await response.text());
     }
-
-    itens = await response.json();
+    
+    const batch = await response.json();
+    itens.push(...batch);
   }
 
   for (const item of itens) {

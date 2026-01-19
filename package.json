@@ -32,5 +32,8 @@
     "dotenv": "^16.4.7",
     "node-fetch": "^3.3.2",
     "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.4"
   }
 }
